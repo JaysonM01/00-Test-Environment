@@ -320,3 +320,30 @@ class IUserStorage {
 // Points to Remember
 // 1. Each class implements only the methods it needs
 // 2. No class is forced to implement methods that it doesn't use
+
+//------------------------------DIP------------------------------//
+// The UserService directly depends on concrete implementation of IUserStorage
+// UserService is tightly coupled to low-level storage classes, violating DIP
+
+class UserService {
+    constructor() {
+      // Direct dependency on low-level module
+      this.storage = new LocalStorageRepository();  // Concrete dependency, violates DIP
+    }
+  
+    save(user) {
+      this.storage.save(user);
+    }
+  }
+  
+  class LocalStorageRepository {
+    save(user) {
+      console.log(`Saving user to localStorage: ${user.name}`);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  // Client code
+  const userService = new UserService();  // Directly depends on LocalStorageRepository
+  userService.save(user);
+  
