@@ -347,3 +347,50 @@ class UserService {
   const userService = new UserService();  // Directly depends on LocalStorageRepository
   userService.save(user);
   
+  //Applying DIP
+  // Abstraction
+class IUserStorage {
+    save(user) {
+      throw new Error("Method not implemented.");
+    }
+  }
+  
+  // Concrete Storage Implementations
+  class LocalStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Saving user to localStorage: ${user.name}`);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  class ApiStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Sending user to API: ${user.name}`);
+      // Simulated API call
+    }
+  }
+  
+  // High-level module depending on abstraction
+  class UserService {
+    constructor(storage) {
+      this.storage = storage;  // Injected dependency, no direct instantiation
+    }
+  
+    save(user) {
+      this.storage.save(user);
+    }
+  }
+  
+  // Client code
+  const apiStorage = new ApiStorageRepository();
+  const userService = new UserService(apiStorage);  // Dependency injected
+  userService.save(user);
+  
+  const localStorage = new LocalStorageRepository();
+  const userService2 = new UserService(localStorage);  // Can easily swap implementation
+  userService2.save(user);
+
+// Points to Remember
+// 1. Decouple from concrete storage implementations
+// 2. Can easily change the type without changing the class
+// 3. High-level module no longer depends on low-level modules, and both depends on the abstraction
