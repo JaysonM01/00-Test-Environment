@@ -89,3 +89,54 @@ class UserRepository {
       }
     }
   }
+
+// Using abstraction to allow extension without modifying existing code
+// 1. Create a Storage Interface
+class IUserStorage {
+    save(user) {
+      throw new Error('Method not implemented.');
+    }
+  }
+
+// 2. Implement Specific Storage Strategies
+class LocalStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Saving user to localStorage: ${user.name}`);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  class SessionStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Saving user to sessionStorage: ${user.name}`);
+      sessionStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  class ApiStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Simulated API call to save user: ${user.name}`);
+      // Simulated fetch: fetch('/api/saveUser', {...})
+    }
+  }
+
+// 3. Use Polymorphism in Client Code
+class UserService {
+    constructor(storage) {
+      this.storage = storage;
+    }
+  
+    save(user) {
+      this.storage.save(user);
+    }
+  }
+
+// Final Usage
+const user = { name: "John Doe", email: "john@example.com" };
+
+if (UserValidator.isValid(user)) {
+  const storage = new ApiStorageRepository(); // Or LocalStorageRepository, etc.
+  const userService = new UserService(storage);
+  userService.save(user);
+  Logger.log("User saved successfully.");
+}
