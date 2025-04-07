@@ -258,4 +258,27 @@ class IUserStorage {
   const userService2 = new UserService(new FaultyStorageRepository());
   userService2.save(user); // Gracefully handles failure, no exception thrown
 
-// 
+//------------------------------ISP------------------------------//
+// In IUserStorage, update() and delete() will be added but some repository won't need the method
+class IUserStorage {
+    save(user) { throw new Error("Method not implemented."); }
+    update(user) { throw new Error("Method not implemented."); }
+    delete(user) { throw new Error("Method not implemented."); }
+  }
+  
+  class LocalStorageRepository extends IUserStorage {
+    save(user) { console.log(`Saving user to localStorage: ${user.name}`); }
+    update(user) { console.log(`Updating user in localStorage: ${user.name}`); }
+    delete(user) { console.log(`Deleting user from localStorage: ${user.name}`); }
+  }
+  
+  class ApiStorageRepository extends IUserStorage {
+    save(user) { console.log(`Sending user to API: ${user.name}`); }
+    update(user) { throw new Error("API doesn't support update"); } // Violation: We shouldn't force this
+    delete(user) { throw new Error("API doesn't support delete"); } // Violation: We shouldn't force this
+  }
+  
+  // Client code
+  const apiStorage = new ApiStorageRepository();
+  apiStorage.update(user);  // Violates ISP, as ApiStorageRepository doesn't support 'update'
+
