@@ -32,8 +32,10 @@ class UserManager {
     manager.logActivity("User saved successfully.");
   }
   
-  // The program above should be refactored, applying the SRP
-
+// Refactored program complying with SRP
+// UserValidator - VValidates user input
+// UserRepository - Handles data storage
+// Logger - Handles logging
   class UserValidator {
     static isValid(user) {
       return user.name && user.email;
@@ -60,4 +62,4 @@ class UserManager {
     UserRepository.save(user);
     Logger.log("User saved successfully.");
   }
-  
+
