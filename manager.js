@@ -67,3 +67,25 @@ class UserManager {
 // 1. Maintainability - easier to update one part without breaking others
 // 2. Testability - each class can be tested in isolation
 // 3. Scalability - easy to replace localStorage with real database in UserRepository without touching validation or logging
+
+//------------------------------OCP------------------------------//
+// This program violates shows that the UserRepository violates the OCP
+// UserRepository supports multiple type of user storage
+// Adding new storage method will need to keep on modifying it
+
+class UserRepository {
+    static save(user, type = 'local') {
+      if (type === 'local') {
+        console.log(`Saving user to localStorage: ${user.name}`);
+        localStorage.setItem('user', JSON.stringify(user));
+      } else if (type === 'session') {
+        console.log(`Saving user to sessionStorage: ${user.name}`);
+        sessionStorage.setItem('user', JSON.stringify(user));
+      } else if (type === 'api') {
+        console.log(`Sending user to remote API: ${user.name}`);
+        // Simulated API call
+      } else {
+        throw new Error('Unknown storage type');
+      }
+    }
+  }
