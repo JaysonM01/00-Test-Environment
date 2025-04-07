@@ -282,3 +282,41 @@ class IUserStorage {
   const apiStorage = new ApiStorageRepository();
   apiStorage.update(user);  // Violates ISP, as ApiStorageRepository doesn't support 'update'
 
+// Refactor code applying ISP
+// Split IUserStorage into smaller interfaces
+class IUserStorage {
+    save(user) { throw new Error("Method not implemented."); }
+  }
+  
+  class IUserUpdate {
+    update(user) { throw new Error("Method not implemented."); }
+  }
+  
+  class IUserDelete {
+    delete(user) { throw new Error("Method not implemented."); }
+  }
+  
+  class LocalStorageRepository extends IUserStorage implements IUserUpdate, IUserDelete {
+    save(user) { console.log(`Saving user to localStorage: ${user.name}`); }
+    update(user) { console.log(`Updating user in localStorage: ${user.name}`); }
+    delete(user) { console.log(`Deleting user from localStorage: ${user.name}`); }
+  }
+  
+  class ApiStorageRepository extends IUserStorage {
+    save(user) { console.log(`Sending user to API: ${user.name}`); }
+  }
+  
+  // Client code
+  const apiStorage = new ApiStorageRepository();
+  apiStorage.save(user);  // Works fine
+  
+  // LocalStorageRepository can be used with all methods
+  const localStorage = new LocalStorageRepository();
+  localStorage.update(user);  // Works fine
+
+// 1. IUserStorage was was split into smaller, more specific interfaces
+// 2. ApiStorageRepository only implements IUserStorage, not IUserUpdate or IUserDelete so it does not need to implement methods
+
+// Points to Remember
+// 1. Each class implements only the methods it needs
+// 2. No class is forced to implement methods that it doesn't use
