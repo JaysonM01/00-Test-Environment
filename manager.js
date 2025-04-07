@@ -63,3 +63,7 @@ class UserManager {
     Logger.log("User saved successfully.");
   }
 
+// Points to Remember
+// 1. Maintainability - easier to update one part without breaking others
+// 2. Testability - each class can be tested in isolation
+// 3. Scalability - easy to replace localStorage with real database in UserRepository without touching validation or logging
