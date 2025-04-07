@@ -140,3 +140,57 @@ if (UserValidator.isValid(user)) {
   userService.save(user);
   Logger.log("User saved successfully.");
 }
+
+//------------------------------LSP------------------------------//
+// Using the same class IUserStorage, we have a subclass FaultyStorageRepository which doesn't fully comply with the contract of the save( ) method
+class IUserStorage {
+    save(user) {
+      throw new Error("Method not implemented.");
+    }
+  }
+  
+  class LocalStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Saving user to localStorage: ${user.name}`);
+      localStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  class SessionStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Saving user to sessionStorage: ${user.name}`);
+      sessionStorage.setItem('user', JSON.stringify(user));
+    }
+  }
+  
+  class FaultyStorageRepository extends IUserStorage {
+    save(user) {
+      console.log(`Attempting to save user in faulty storage: ${user.name}`);
+      throw new Error("Storage error occurred!"); // Error is thrown unexpectedly
+    }
+  }
+  
+  // UserService remains unchanged
+  class UserService {
+    constructor(storage) {
+      this.storage = storage;
+    }
+  
+    save(user) {
+      this.storage.save(user);
+    }
+  }
+  
+  // Usage
+  const user = { name: "John Doe", email: "john@example.com" };
+  
+  const userService1 = new UserService(new LocalStorageRepository());
+  userService1.save(user); // Works fine
+  
+  const userService2 = new UserService(new FaultyStorageRepository());
+  userService2.save(user); // Violates LSP because it unexpectedly throws an error
+
+// The UserService class expects that any IUserStorage object can be used interchangeably without unexpected side effects
+// FaultyStorageRepository breaks the codeby throwing error which violates LSP
+// Client UserService cannot be substitute FaultyStorageRepository without causing an issue
+
