@@ -23,7 +23,7 @@ def init_test_flags():
     global test_a_failed, test_a_passed
     global test_b_failed, test_b_passed
     global waiting_for_result
-    waiting_for_result = False
+    waiting_for_result = None
     test_a_failed = None
     test_a_passed = None
     test_b_failed = None
@@ -171,7 +171,7 @@ async def reset_alarm():
             is_reset = True
             print("reset pressed")
         elif reset.value() == 0 and is_reset:
-            reset.value(0)
+            #reset.value(0)
             is_reset = False
             print("reset restored")
         
